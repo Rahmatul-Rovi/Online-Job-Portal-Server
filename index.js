@@ -87,6 +87,13 @@ async function run() {
       res.send(result);
     })
 
+    //app.get('/applications/:id', () => {})
+      app.get('/applications/job/:job_id', async(req, res) => {
+       const job_id = req.params.job_id;
+       const query = {jobId: job_id};
+       const result = await applicationCollections.find(query).toArray();
+       res.send(result);
+      })
 
     app.post('/applications', async(req, res)=> {
       const application = req.body;
@@ -95,6 +102,17 @@ async function run() {
       res.send(result);
     })
     
+    app.patch('/applications/:id', async(req, res) => {
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)};
+      const updatedDoc = {
+        $set:{
+          status: req.body.status
+        }
+      }
+      const result = await applicationCollections.updateOne(filter, updatedDoc);
+      res.send(result);
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
