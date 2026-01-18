@@ -28,8 +28,10 @@ const verifyToken=(req, res, next) => {
   }
   //verify token
   jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, decoded) => {
-    
+    return res.status(401).send({message: 'UnAuthorize access'})
+   
   })
+   console.log(decoded);
   next();
 }
 
