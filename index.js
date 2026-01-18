@@ -2,12 +2,16 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const jwt = require('jsonwebtoken');
-const port = process.env.PORT | 3000
+const port = process.env.PORT || 3000
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 //middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173'], 
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+    credentials: true
+}));
 app.use(express.json());
 
 //MongoDB
@@ -23,6 +27,9 @@ const client = new MongoClient(uri, {
   }
 });
 
+//for vercel
+module.exports = app;
+
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
@@ -32,12 +39,12 @@ async function run() {
     const applicationCollections = client.db('JobPortal').collection('Applications');
 
     //JWT token related apis
-    //  app.post('/jwt', (req, res)=> {
-    //   const {email} = req.body;
-    //   const user = {email};
-    //   const token = jwt.sign(user, 'secret', {expiresIn: '1h'});
-    //   res.send({token});
-    //  })
+     app.post('/jwt', (req, res)=> {
+      const {email} = req.body;
+      const user = {email};
+      const token = jwt.sign(user, process.env.JWT_ACCESS_SECRET, {expiresIn: '1h'});
+      res.send({token});
+     })
 
 
     //jobs api
@@ -141,3 +148,5 @@ app.get('/', (req, res) => {
 app.listen(port, () => {
   console.log(`Server app listening on port ${port}`)
 })
+
+module.exports = app
