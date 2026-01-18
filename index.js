@@ -8,11 +8,23 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 //middleware
-app.use(cors());
-app.use(express.json({
+app.use(cors({
   origin: ['http://localhost:5173'],
   credentials: true
 }));
+app.use(express.json());
+app.use(cookieParser());
+
+const logger = (req, res, next) => {
+  console.log('Inside the logger middle ware');
+  next();
+}
+
+const verifyToken=(req, res, next) => {
+  const token = req?.cookies?.token;
+  console.log('Cookie in the middleware',token);
+  next();
+}
 
 //MongoDB
 
@@ -92,7 +104,7 @@ async function run() {
 
     //job application related apis
 
-    app.get('/applications', async(req, res) => {
+    app.get('/applications', logger, verifyToken, async(req, res) => {
       const email = req.query.email;
 
       console.log('Inside applications api',req.cookies);
