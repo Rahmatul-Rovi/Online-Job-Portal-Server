@@ -2,17 +2,17 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 const port = process.env.PORT || 3000
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config();
 
 //middleware
-app.use(cors({
-    origin: ['http://localhost:5173'], 
-    methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-    credentials: true
+app.use(cors());
+app.use(express.json({
+  origin: ['http://localhost:5173'],
+  credentials: true
 }));
-app.use(express.json());
 
 //MongoDB
 
@@ -40,10 +40,10 @@ async function run() {
 
     //JWT token related apis
      app.post('/jwt', (req, res)=> {
-      const {email} = req.body;
-      const user = {email};
+      const userData = req.body;
+      //const user = {email};
       const token = jwt.sign(user, process.env.JWT_ACCESS_SECRET, {expiresIn: '1h'});
-      res.send({token});
+      res.send({success: true});
      })
 
 
