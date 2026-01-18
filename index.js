@@ -23,6 +23,13 @@ const logger = (req, res, next) => {
 const verifyToken=(req, res, next) => {
   const token = req?.cookies?.token;
   console.log('Cookie in the middleware',token);
+  if(!token){
+    return res.status(401).send({message: 'UnAuthorize access'})
+  }
+  //verify token
+  jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, decoded) => {
+    
+  })
   next();
 }
 
