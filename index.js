@@ -28,11 +28,13 @@ const verifyToken=(req, res, next) => {
   }
   //verify token
   jwt.verify(token, process.env.JWT_ACCESS_SECRET, (err, decoded) => {
-    return res.status(401).send({message: 'UnAuthorize access'})
-   
+   if(err){
+     return res.status(401).send({message: 'UnAuthorize access'})
+   }
+    req.decoded = decoded;
+    next();
   })
-   console.log(decoded);
-  next();
+ 
 }
 
 //MongoDB
@@ -116,7 +118,13 @@ async function run() {
     app.get('/applications', logger, verifyToken, async(req, res) => {
       const email = req.query.email;
 
-      console.log('Inside applications api',req.cookies);
+     // console.log('Inside applications api',req.cookies);
+     if(email!== req.decoded.email){
+       return res.status(403).send({message: 'Forbidden access'})
+     }
+
+
+
       const query = {
         applicant: email
       }
