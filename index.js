@@ -43,6 +43,13 @@ async function run() {
       const userData = req.body;
       //const user = {email};
       const token = jwt.sign(user, process.env.JWT_ACCESS_SECRET, {expiresIn: '1h'});
+
+      //set token in  the cookies
+        res.cookie('token', token, {
+          httpOnly: true,
+          secure: false,
+
+        })
       res.send({success: true});
      })
 
@@ -88,6 +95,7 @@ async function run() {
     app.get('/applications', async(req, res) => {
       const email = req.query.email;
 
+      console.log('Inside applications api',req.cookies);
       const query = {
         applicant: email
       }
