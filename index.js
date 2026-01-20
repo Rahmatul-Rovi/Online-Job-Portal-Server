@@ -37,6 +37,15 @@ const verifyToken=(req, res, next) => {
  
 }
 
+const verifyFirebaseToken = (req,res,next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader.split(' ')[1];
+  if(token){
+    return res.status(401).send({message: 'UnAuthorize access'})
+  }
+  console.log(token);
+}
+
 //MongoDB
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.bou0ahg.mongodb.net/?appName=Cluster0`;
@@ -115,7 +124,7 @@ async function run() {
 
     //job application related apis
 
-    app.get('/applications', logger, verifyToken, async(req, res) => {
+    app.get('/applications', logger, verifyToken, verifyFirebaseToken, async(req, res) => {
       const email = req.query.email;
 
      // console.log('Inside applications api',req.cookies);
